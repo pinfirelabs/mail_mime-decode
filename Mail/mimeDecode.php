@@ -323,10 +323,14 @@ class Mail_mimeDecode extends PEAR
                 
                 case 'multipart/signed': // PGP
                     $parts = $this->_boundarySplit($body, $content_type['other']['boundary'], true);
-                    $return->parts['msg_body'] = $parts[0]; 
-                    list($part_header, $part_body) = $this->_splitBodyHeader($parts[1]);
-                    $return->parts['sig_hdr'] = $part_header;
-                    $return->parts['sig_body'] = $part_body;
+                    $return->parts['msg_body'] = $parts[0];
+
+                    if (isset($parts[1])) {
+                        list($part_header, $part_body) = $this->_splitBodyHeader($parts[1]);
+                        $return->parts['sig_hdr'] = $part_header;
+                        $return->parts['sig_body'] = $part_body;
+                    }
+
                     break;
 
                 case 'multipart/parallel':
@@ -477,7 +481,7 @@ class Mail_mimeDecode extends PEAR
                 if (!$got_start) {
                     // munge headers for mbox style from
                     if ($value[0] == '>') {
-                        $value = substring($value, 1); // remove mbox >
+                        $value = substr($value, 1); // remove mbox >
                     }
                     if (substr($value,0,5) == 'From ') {
                         $value = 'Return-Path: ' . substr($value, 5);
@@ -488,7 +492,7 @@ class Mail_mimeDecode extends PEAR
                 
                 $hdr_name = substr($value, 0, $pos = strpos($value, ':'));
                 $hdr_value = substr($value, $pos+1);
-                if($hdr_value[0] == ' ') {
+                if($hdr_value && $hdr_value[0] == ' ') {
                     $hdr_value = substr($hdr_value, 1);
                 }
 
