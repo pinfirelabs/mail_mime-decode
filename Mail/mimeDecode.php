@@ -323,7 +323,7 @@ class Mail_mimeDecode extends PEAR
                 
                 case 'multipart/signed': // PGP
                     $parts = $this->_boundarySplit($body, $content_type['other']['boundary'], true);
-                    $return->parts['msg_body'] = $parts[0];
+                    $return->parts['msg_body'] = isset($parts[0]) ? $parts[0] : $body;
 
                     if (isset($parts[1])) {
                         list($part_header, $part_body) = $this->_splitBodyHeader($parts[1]);
