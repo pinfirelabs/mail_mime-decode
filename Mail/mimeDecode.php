@@ -417,7 +417,7 @@ class Mail_mimeDecode extends PEAR
                 }
 
                 $arr = &Mail_mimeDecode::getMimeNumbers($structure->parts[$i], $no_refs, $_mime_number, $prepend);
-                foreach ($arr as $key => $val) {
+                foreach (array_keys($arr) as $key) {
                     $no_refs ? $return[$key] = '' : $return[$key] = &$arr[$key];
                 }
             }
@@ -680,7 +680,7 @@ class Mail_mimeDecode extends PEAR
             //extended-initial-value := [charset] "'" [language] "'"
             //              extended-other-values
             $match = array();
-            $info = preg_match("/^([^']+)'([^']*)'(.*)$/", $val, $match);
+            preg_match("/^([^']+)'([^']*)'(.*)$/", $val, $match);
              
             $clean_others[$key] = urldecode($match[3]);
             $clean_others[strtolower($key)] = $clean_others[$key];
@@ -838,7 +838,9 @@ class Mail_mimeDecode extends PEAR
 
         // Replace encoded characters
 		 
-        $cb = create_function('$matches',  ' return chr(hexdec($matches[0]));');
+		$cb = function($matches) {
+			return chr(hexdec($matches[0]));
+		};
          
         $input = preg_replace_callback( '/=([a-f0-9]{2})/i', $cb, $input);
 
